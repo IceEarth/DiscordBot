@@ -18,10 +18,10 @@ public interface Command {
     }
 
     default String invalidArguments(){
-        return "Sorry! The usage wrong! Do it that way:\n" + getUsage();
+        return "Sorry! The usage is wrong! Do it that way:\n" + getUsage();
     }
     default String hierarchy(){
-        return "The member you want to interact with is in the hierarchy taller than me. Sorry!";
+        return "The member you want to interact with is in the hierarchy higher than me. Sorry!";
     }
 
     String getUsage();
