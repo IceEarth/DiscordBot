@@ -16,7 +16,7 @@ public class Main {
         new Main().run();
     }
     public void run() throws LoginException {
-        jdaBuilder = JDABuilder.createDefault("TOKEN");
+        jdaBuilder = JDABuilder.createDefault(TOKEN.getToken());
 
         jdaBuilder.setActivity(Activity.watching("IceEarth beim Programmieren zu!"));
         jdaBuilder.setStatus(OnlineStatus.IDLE);
