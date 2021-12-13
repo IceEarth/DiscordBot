@@ -24,6 +24,11 @@ public class Discord {
         return "<t:" + duration + ":R>";
     }
     public static String formatTimeAndDuration(long millis){
-        return formatTime(millis) + " (" + formatDuration(millis) + ")";
+        if(millis > 0){
+            return formatTime(millis) + " (" + formatDuration(millis) + ")";
+        }else {
+            return "**forever**";
+        }
+
     }
 }

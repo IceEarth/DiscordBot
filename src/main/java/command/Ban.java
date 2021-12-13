@@ -1,10 +1,12 @@
 package command;
 
 import command.util.Command;
+import manager.embed.BanEmbed;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -26,7 +28,7 @@ public class Ban implements Command {
     private RestAction<Member> member;
     private String reason;
     private Duration duration;
-
+    private BanEmbed embed;
     private int durationInt;
     private String durationTime;
     private String[] durationString;
@@ -35,10 +37,12 @@ public class Ban implements Command {
     public void execute(String[] args, Member member, TextChannel channel, Message message) throws Exception{
         if(isPermitted(member)) {
                 message.getGuild().retrieveMemberById(Discord.getMembersId(args[0])).queue(memb -> {
-                    durationString = Math.splitToIntString(args[1]);
+
+                    durationString = args.length > 1 ? Math.splitToIntString(args[1]) : null;
 
 
-                    reason = args[2];
+                    reason = args.length > 2 ? String.join(" ", Arrays.stream(args).toList().subList(2, args.length)) : null;
+                    System.out.println("REASON: " + reason);
 
 
                     if (durationString != null) {
@@ -51,20 +55,12 @@ public class Ban implements Command {
                             case "d", "days" -> duration = Duration.ofDays(durationInt);
                             case "m", "months" -> duration = Duration.ofDays(durationInt * 30L);
                         }
+                    }else {
+                        duration = Duration.ofSeconds(0);
                     }
 
-                    /*try {
-                        memb.ban(0).queue();
-                    } catch (HierarchyException ex) {
-                        channel.sendMessage("This user has more rights than me... I can't ban him ;(").queue();
-                    } catch (PermissionException ex) {
-                        channel.sendMessage("Sorry, but I am not permitted to do that!").queue();
-                    }*/
-
-                    EmbedBuilder embedBuilder = new EmbedBuilder();
-                    embedBuilder.setColor(Color.red);
-                    embedBuilder.setDescription("Der " + memb.getAsMention() + " wurde erfolgreich gebannt! Sein Bann endet am " + Discord.formatTimeAndDuration(duration.toMillis()));
-                    message.getChannel().sendMessage(embedBuilder.build()).queue();
+                    this.embed = new BanEmbed(memb, this.duration.toMillis(), reason);
+                    message.getChannel().sendMessage(embed.getEmbed()).queue();
                 });
         }
 
@@ -87,3 +83,15 @@ public class Ban implements Command {
 
 
 }
+
+/*try {
+                        memb.ban(0).queue();
+                    } catch (HierarchyException ex) {
+                        channel.sendMessage("This user has more rights than me... I can't ban him ;(").queue();
+                    } catch (PermissionException ex) {
+                        channel.sendMessage("Sorry, but I am not permitted to do that!").queue();
+                    }
+
+                    EmbedBuilder embedBuilder = new EmbedBuilder();
+                    embedBuilder.setColor(Color.red);
+                    embedBuilder.setDescription("Der " + memb.getAsMention() + " wurde erfolgreich gebannt! Sein Bann endet am " + Discord.formatTimeAndDuration(duration.toMillis()));*/
