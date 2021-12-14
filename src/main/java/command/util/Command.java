@@ -5,11 +5,13 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 
+import java.util.function.Consumer;
+
 public interface Command {
 
 
 
-    void execute(String[] args, Member member, TextChannel channel, Message message) throws Exception;
+    void execute(String[] args, Member member, TextChannel channel, Message message, Consumer<Throwable> exception) ;
 
     void executeSlash();
 

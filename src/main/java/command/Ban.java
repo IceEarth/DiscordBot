@@ -1,6 +1,7 @@
 package command;
 
 import command.util.Command;
+import manager.CommandManager;
 import manager.embed.BanEmbed;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -22,6 +23,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Ban implements Command {
@@ -34,7 +36,7 @@ public class Ban implements Command {
     private String[] durationString;
 
     @Override
-    public void execute(String[] args, Member member, TextChannel channel, Message message) throws Exception{
+    public void execute(String[] args, Member member, TextChannel channel, Message message, Consumer<Throwable> exception){
         if(isPermitted(member)) {
                 message.getGuild().retrieveMemberById(Discord.getMembersId(args[0])).queue(memb -> {
 
@@ -55,13 +57,17 @@ public class Ban implements Command {
                             case "d", "days" -> duration = Duration.ofDays(durationInt);
                             case "m", "months" -> duration = Duration.ofDays(durationInt * 30L);
                         }
-                    }else {
+                    } else {
                         duration = Duration.ofSeconds(0);
                     }
 
                     this.embed = new BanEmbed(memb, this.duration.toMillis(), reason);
                     message.getChannel().sendMessage(embed.getEmbed()).queue();
-                });
+                    memb.ban(0).queue();
+
+                }, throwable -> exception.accept(throwable));
+
+
         }
 
     }

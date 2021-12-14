@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 public class CommandManager {
     private final Map<CommandData, Command> commands;
@@ -48,14 +49,15 @@ public class CommandManager {
             Collections.addAll(possibleStrings, entry.getKey().aliases());
             for(String s : possibleStrings){
                 if(s.equalsIgnoreCase(command)) {
-                    try {
-                        entry.getValue().execute(args, member, channel, message);
-                    }catch (HierarchyException ex){
-                        System.out.println("hierarchy...");
-                        channel.sendMessage(ex.getMessage()).queue();
-                    } catch (Exception e) {
-                        System.out.println("Exception: " + e.getMessage());
-                    }
+                    entry.getValue().execute(args, member, channel, message, throwable -> {
+                        if (throwable instanceof HierarchyException) {
+                            channel.sendMessage("HIERACHRY...").queue();
+                        } else {
+                            channel.sendMessage("nix ;(...").queue();
+                        }
+                        System.out.println("Hallo?");
+                    });
+
                     return;
                 }
             }
@@ -64,3 +66,11 @@ public class CommandManager {
 
 
 }
+/*try {
+
+        }catch (HierarchyException ex){
+        System.out.println("hierarchy...");
+        channel.sendMessage(ex.getMessage()).queue();
+        } catch (Exception e) {
+        System.out.println("Exception: " + e.getMessage());
+        }*/

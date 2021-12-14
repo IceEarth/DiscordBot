@@ -13,7 +13,7 @@ public class BanEmbed {
 
     public BanEmbed(Member member, long duration, String reason){
         embedBuilder.setDescription("You have banned " + member.getAsMention() + (reason == null ? "." : " for the reason *" + reason + "*.") +
-                "\n\n" + (duration > 0 ? "Their ban ends at the " : "Them is banned ") + Discord.formatTimeAndDuration(duration) + ".");
+                "\n\n" + (duration > 0 ? "The ban ends at the " : "Them is banned ") + Discord.formatTimeAndDuration(duration) + ".");
         embedBuilder.setThumbnail(member.getUser().getAvatarUrl());
     }
 
