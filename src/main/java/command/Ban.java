@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Ban implements Command {
+    private Throwable error;
     private RestAction<Member> member;
     private String reason;
     private Duration duration;
@@ -37,8 +38,13 @@ public class Ban implements Command {
 
     @Override
     public void execute(String[] args, Member member, TextChannel channel, Message message, Consumer<Throwable> exception){
-        if(isPermitted(member)) {
-                message.getGuild().retrieveMemberById(Discord.getMembersId(args[0])).queue(memb -> {
+        {
+                message.getGuild().retrieveMemberById(Discord.getMembersId(args[0])).queue(target -> {
+                    if((error = isExecutable(member, target)) != null){
+                        exception.accept(error);
+                        return;
+                    }
+
 
                     durationString = args.length > 1 ? Math.splitToIntString(args[1]) : null;
 
@@ -61,14 +67,18 @@ public class Ban implements Command {
                         duration = Duration.ofSeconds(0);
                     }
 
-                    this.embed = new BanEmbed(memb, this.duration.toMillis(), reason);
-                    message.getChannel().sendMessage(embed.getEmbed()).queue();
-                    memb.ban(0).queue();
+                    this.embed = new BanEmbed(target, this.duration.toMillis(), reason);
+                    //message.getChannel().sendMessage().queue();
+                    target.ban(0).queue();
 
-                }, throwable -> exception.accept(throwable));
+
+
+
+                });
 
 
         }
+
 
     }
 
@@ -86,11 +96,17 @@ public class Ban implements Command {
         return "/ban [Member] (duration/date) (reason)";
     }
 
+    private Throwable isExecutable(Member member, Member target){
+        if(!isPermitted(member))return new PermissionException("ban");
+        if(!member.getGuild().getSelfMember().canInteract(target))return new HierarchyException("ban");
+        return null;
+    }
+
 
 
 }
 
-/*try {
+                    /*try {
                         memb.ban(0).queue();
                     } catch (HierarchyException ex) {
                         channel.sendMessage("This user has more rights than me... I can't ban him ;(").queue();

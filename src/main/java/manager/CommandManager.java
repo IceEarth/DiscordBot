@@ -50,6 +50,7 @@ public class CommandManager {
             for(String s : possibleStrings){
                 if(s.equalsIgnoreCase(command)) {
                     entry.getValue().execute(args, member, channel, message, throwable -> {
+                        System.out.println("test1234");
                         if (throwable instanceof HierarchyException) {
                             channel.sendMessage("HIERACHRY...").queue();
                         } else {
