@@ -23,6 +23,7 @@ public class MessageListener extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
         if(event.getAuthor() == jda.getSelfUser()) return;
+
         final String PREFIX = "!";
         TextChannel channel;
         String message = event.getMessage().getContentRaw();

@@ -98,7 +98,7 @@ public class Ban implements Command {
 
     private Throwable isExecutable(Member member, Member target){
         if(!isPermitted(member))return new PermissionException("ban");
-        if(!member.getGuild().getSelfMember().canInteract(target))return new HierarchyException("ban");
+        if(!member.getGuild().getSelfMember().canInteract(target)) return new HierarchyException("ban");
         return null;
     }
 

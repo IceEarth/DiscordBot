@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,14 +50,17 @@ public class CommandManager {
             Collections.addAll(possibleStrings, entry.getKey().aliases());
             for(String s : possibleStrings){
                 if(s.equalsIgnoreCase(command)) {
-                    entry.getValue().execute(args, member, channel, message, throwable -> {
+                    Command commandClass = entry.getValue();
+                    commandClass.execute(args, member, channel, message, throwable -> {
                         System.out.println("test1234");
                         if (throwable instanceof HierarchyException) {
-                            channel.sendMessage("HIERACHRY...").queue();
-                        } else {
+                            message.reply(commandClass.hierarchy()).queue();
+                        }else if(throwable instanceof PermissionException){
+                            channel.sendMessage("You are not permitted to perform this command!").queue();
+                        }
+                        else {
                             channel.sendMessage("nix ;(...").queue();
                         }
-                        System.out.println("Hallo?");
                     });
 
                     return;
